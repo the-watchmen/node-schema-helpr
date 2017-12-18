@@ -14,11 +14,10 @@ const componentMap = {
 }
 
 export default {
-  getField({key, property, parent, className}) {
+  getField({key, property, parent, className, readOnly}) {
     dbg('get-field: args=%o', arguments[0])
 
     assert(property.type, () => `type required for property=${stringify(property)}`)
-    // assert(property.label, () => `label required for property=${stringify(property)}`)
 
     const component = componentMap[property.type]
     assert(component, () => `unable to obtain component for property=${stringify(property)}`)
@@ -29,6 +28,7 @@ export default {
         name={pushParent({parent, key})}
         label={property.label || key}
         component={component}
+        disabled={readOnly}
       />
     )
   }

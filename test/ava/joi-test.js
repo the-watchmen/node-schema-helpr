@@ -3,14 +3,14 @@ import debug from 'debug'
 import {pretty} from '@watchmen/helpr'
 import joi from 'joi'
 import _ from 'lodash'
-import requestValidator from './fixtures/request-1'
+import request from './fixtures/request'
 import {check} from './_helper'
 
 const dbg = debug('test:joi')
 
 const alt = joi
   .alternatives()
-  .meta({discriminator: '_id.valids', label: '_id.label'})
+  .meta({discriminator: '_id'})
   .try(
     joi.object({
       _id: joi
@@ -44,7 +44,7 @@ test('describe', t => {
 })
 
 test('describe: request', t => {
-  const described = requestValidator.describe()
+  const described = request.describe()
   dbg('described:\n', pretty(described))
   t.truthy(described)
 })

@@ -1,6 +1,6 @@
 {
   "name": "@watchmen/schema-helpr",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "",
   "main": "dist/index.js",
   "repository": "the-watchmen/node-schema-helpr",
@@ -19,17 +19,18 @@
   "peerDependencies": {
     "config": ">=1",
     "debug": ">=3",
-    "joi": ">=13",
     "lodash": ">=4",
+    "material-ui": ">=1.0.0-0",
     "prop-types": ">=15",
     "react": ">=16",
     "react-dom": ">=16",
     "react-redux": ">=5",
     "redux": ">=3",
-    "redux-form": ">=7.0.0"
+    "redux-form": ">=7.0.0",
+    "redux-form-material-ui": ">=5.0.0-0"
   },
   "dependencies": {
-    "@watchmen/helpr": ">=1.1"
+    "@watchmen/helpr": ">=1.2"
   },
   "devDependencies": {
     "@team-griffin/install-self-peers": ">=1",
@@ -44,13 +45,10 @@
     "eslint-config-xo-react": ">=0.14",
     "eslint-plugin-prettier": ">=2",
     "eslint-plugin-react": ">=7",
+    "joi": ">=13",
+    "joi-to-json-schema": ">=3",
     "prettier": ">=1",
     "xo": ">=0.19"
-  },
-  "optionalDependencies": {
-    "joi-to-json-schema": ">=3",
-    "material-ui": ">=1.0.0-0",
-    "redux-form-material-ui": ">=5.0.0-0"
   },
   "ava": {
     "babel": "inherit",

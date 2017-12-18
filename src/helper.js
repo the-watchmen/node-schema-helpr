@@ -1,5 +1,7 @@
 // import _ from 'lodash'
-// import {assert} from '@watchmen/helpr'
+// import debug from 'debug'
+
+// const dbg = debug('lib:schema-helpr')
 
 // export function alternativesToMap({alternatives}) {
 //   assert(alternatives.meta)
