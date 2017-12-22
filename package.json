@@ -10,27 +10,18 @@
     "pretest": "xo",
     "test": "npm run ava",
     "prebuild": "npm run test",
-    "build": "babel ./src -d ./dist",
+    "build": "rm -rf dist && babel src -d dist",
     "fix": "xo --fix",
     "prepare": "install-self-peers -- --ignore-scripts"
   },
   "author": "tony kerz",
   "license": "ISC",
   "peerDependencies": {
-    "config": ">=1",
     "debug": ">=3",
-    "lodash": ">=4",
-    "material-ui": ">=1.0.0-0",
-    "prop-types": ">=15",
-    "react": ">=16",
-    "react-dom": ">=16",
-    "react-redux": ">=5",
-    "redux": ">=3",
-    "redux-form": ">=7.0.0",
-    "redux-form-material-ui": ">=5.0.0-0"
+    "lodash": ">=4"
   },
   "dependencies": {
-    "@watchmen/helpr": "^2.0.0"
+    "@watchmen/helpr": "^2.1.0"
   },
   "devDependencies": {
     "@team-griffin/install-self-peers": ">=1",
@@ -42,9 +33,7 @@
     "babel-preset-stage-0": ">=6.24",
     "cross-env": ">=5",
     "eslint-config-prettier": ">=2",
-    "eslint-config-xo-react": "^0.15.0",
     "eslint-plugin-prettier": "^2.4.0",
-    "eslint-plugin-react": ">=7",
     "joi": ">=13",
     "joi-to-json-schema": ">=3",
     "prettier": ">=1",
@@ -52,10 +41,7 @@
   },
   "ava": {
     "babel": "inherit",
-    "require": [
-      "babel-register",
-      "babel-polyfill"
-    ]
+    "require": ["babel-register", "babel-polyfill"]
   },
   "xo": {
     "useEslintrc": true
