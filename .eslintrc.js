@@ -1,5 +1,5 @@
 module.exports = {
-  extends: ['eslint:recommended', 'prettier', 'prettier/react'],
+  extends: ['eslint:recommended', 'prettier'],
   parser: 'babel-eslint',
   env: {
     es6: true,
@@ -7,8 +7,7 @@ module.exports = {
     node: true
   },
   ecmaFeatures: {
-    modules: true,
-    jsx: true
+    modules: true
   },
   globals: {
     __DEV__: true
@@ -16,9 +15,6 @@ module.exports = {
   plugins: ['prettier'],
   rules: {
     'import/prefer-default-export': 'off',
-    'react/forbid-component-props': 'off',
-    'react/prop-types': 'off',
-    'react/require-default-props': 'off',
     'prettier/prettier': [
       'error',
       {

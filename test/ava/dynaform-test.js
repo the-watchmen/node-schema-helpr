@@ -1,8 +1,13 @@
 import test from 'ava'
 import debug from 'debug'
 import {pretty, deepClean, isLike, stringify} from '@watchmen/helpr'
-import {getAlternativeModeFields, getFields, getDiscriminators} from '../../src/dynaform'
-import adapter from '../../src/mui-redux-adapter'
+import {
+  getAlternativeModeFields,
+  getFields,
+  getAlternativeDiscriminators,
+  getAlternativeSchemas
+} from '../../src'
+import adapter from './fixtures/adapter'
 import requests from './fixtures/request'
 
 const dbg = debug('test:dynaform-test')
@@ -22,7 +27,25 @@ test('getAlternativeModeFields', t => {
     })
   )
 
-  const discriminators = getDiscriminators({modeFields})
+  const discriminators = getAlternativeDiscriminators({alternatives: modeFields})
+  dbg('discriminators=%o', stringify(discriminators))
+  t.truthy(discriminators)
+  t.deepEqual(discriminators, {t1: 'type one', t2: 'type two', t3: 'type three'})
+})
+
+test('getAlternativeSchemas', t => {
+  const schemas = getAlternativeSchemas({alternatives: _requests})
+  dbg('schemas=%s', pretty(deepClean(schemas)))
+  t.truthy(schemas)
+
+  t.true(
+    isLike({
+      actual: schemas,
+      expected: {t1: {label: 'type one'}, t2: {label: 'type two'}, t3: {label: 'type three'}}
+    })
+  )
+
+  const discriminators = getAlternativeDiscriminators({alternatives: schemas})
   dbg('discriminators=%o', stringify(discriminators))
   t.truthy(discriminators)
   t.deepEqual(discriminators, {t1: 'type one', t2: 'type two', t3: 'type three'})

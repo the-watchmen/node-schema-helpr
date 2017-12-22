@@ -1,9 +1,9 @@
 import joi from 'joi'
-import identified from './identified'
+import {discriminated} from './validators'
 
 export default function({value, label}) {
   return joi.object({
-    type: identified({value, label}).concat(
+    type: discriminated({name: '_id', value, label, altName: 'type'}).concat(
       joi.object({
         /* future type fields here */
       })
