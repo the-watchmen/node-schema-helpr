@@ -23,11 +23,24 @@ test('getAlternativeModeFields', t => {
   t.true(
     isLike({
       actual: modeFields,
-      expected: {t1: {label: 'type one'}, t2: {label: 'type two'}, t3: {label: 'type three'}}
+      expected: {
+        t1: {},
+        t2: {},
+        t3: {}
+      }
     })
   )
 
-  const discriminators = getAlternativeDiscriminators({alternatives: modeFields})
+  t.is(modeFields.t1.create.length, 1)
+  t.is(modeFields.t1.edit.length, 3)
+  t.is(modeFields.t2.create.length, 1)
+  t.is(modeFields.t2.edit.length, 3)
+  t.is(modeFields.t3.create.length, 1)
+  t.is(modeFields.t3.edit.length, 3)
+})
+
+test('getAlternativeDiscriminators', t => {
+  const discriminators = getAlternativeDiscriminators({alternatives: _requests})
   dbg('discriminators=%o', stringify(discriminators))
   t.truthy(discriminators)
   t.deepEqual(discriminators, {t1: 'type one', t2: 'type two', t3: 'type three'})
@@ -37,18 +50,19 @@ test('getAlternativeSchemas', t => {
   const schemas = getAlternativeSchemas({alternatives: _requests})
   dbg('schemas=%s', pretty(deepClean(schemas)))
   t.truthy(schemas)
-
   t.true(
     isLike({
       actual: schemas,
-      expected: {t1: {label: 'type one'}, t2: {label: 'type two'}, t3: {label: 'type three'}}
+      expected: {
+        t1: {type: 'object'},
+        t2: {type: 'object'},
+        t3: {type: 'object'}
+      }
     })
   )
-
-  const discriminators = getAlternativeDiscriminators({alternatives: schemas})
-  dbg('discriminators=%o', stringify(discriminators))
-  t.truthy(discriminators)
-  t.deepEqual(discriminators, {t1: 'type one', t2: 'type two', t3: 'type three'})
+  t.is(schemas.t1.children.type.children._id.valids[0], 't1')
+  t.is(schemas.t2.children.type.children._id.valids[0], 't2')
+  t.is(schemas.t3.children.type.children._id.valids[0], 't3')
 })
 
 test('getFields: create', t => {
@@ -75,8 +89,4 @@ test('getFields: edit', t => {
       expected: [{props: {name: '_id'}}, {props: {name: 'type._id'}}, {props: {name: 'f1'}}]
     })
   )
-  // t.is(fields.length, 3)
-  // t.is(fields[0].props.name, '_id')
-  // t.is(fields[1].props.name, 'type._id')
-  // t.is(fields[1].props.name, 'type._id')
 })

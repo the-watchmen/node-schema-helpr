@@ -2,7 +2,7 @@ import _ from 'lodash'
 import {stringify, merge, assert} from '@watchmen/helpr'
 import debug from 'debug'
 
-const dbg = debug('lib:schema-helpr:dynaform')
+const dbg = debug('lib:schema-helpr')
 
 export function pushParent({parent, key}) {
   return parent ? `${parent}.${key}` : key
@@ -175,10 +175,11 @@ export function getAlternativeValues({alternatives, getAlternativeValue}) {
       )
       assert(propVal.valids[0], () => `valids[0] required on property=${stringify(propVal)}`)
       assert(propVal.label, () => `label required on property=${stringify(propVal)}`)
-      result[propVal.valids[0]] = {
-        label: propVal.label,
-        alternative: getAlternativeValue({alternative})
-      }
+      // result[propVal.valids[0]] = {
+      //   label: propVal.label,
+      //   alternative: getAlternativeValue({alternative})
+      // }
+      result[propVal.valids[0]] = getAlternativeValue({alternative, label: propVal.label})
     },
     {}
   )
@@ -256,9 +257,16 @@ export function getAlternativeSchemas({alternatives}) {
 //
 // {t1: 'type one', t2: 'type two'}
 //
+// export function getAlternativeDiscriminators({alternatives}) {
+//   return _.transform(alternatives, (result, alternative, key) => {
+//     result[key] = alternative.label
+//   })
+// }
+
 export function getAlternativeDiscriminators({alternatives}) {
-  return _.transform(alternatives, (result, alternative, key) => {
-    result[key] = alternative.label
+  return getAlternativeValues({
+    alternatives,
+    getAlternativeValue: ({label}) => label
   })
 }
 
@@ -269,7 +277,7 @@ export function getUpdatePaths({schema, parent, result = []}) {
     (result, property, key) => {
       dbg('transform: key=%o, property=%o, result=%o', key, property, result)
       var meta = merge(property.meta)
-      if (!(meta.isDiscriminator || meta.isGenerated)) {
+      if (!meta.isGenerated) {
         if (property.type === 'object') {
           getUpdatePaths({
             schema: property,
@@ -283,6 +291,13 @@ export function getUpdatePaths({schema, parent, result = []}) {
     },
     []
   )
+}
+
+export function getAlternativeUpdatePaths({alternatives}) {
+  return getAlternativeValues({
+    alternatives,
+    getAlternativeValue: ({alternative}) => getUpdatePaths({schema: alternative})
+  })
 }
 
 export function getUpdateData({data, schema, paths}) {
