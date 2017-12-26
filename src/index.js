@@ -13,14 +13,15 @@ export function getSchemaProperty({property}) {
   return `children.${property.replace(/\./g, '.children.')}`
 }
 
-export function getFields({schema, adapter, result = [], parent, isCreate, className}) {
+export function getFields({schema, adapter, result = [], parent, isCreate, className, readOnly}) {
   dbg(
-    'get-fields: schema=%o, result.length=%o, parent=%o, is-create=%o, class-name=%o',
+    'get-fields: schema=%o, result.length=%o, parent=%o, is-create=%o, class-name=%o, read-only=%o',
     schema,
     result.length,
     parent,
     isCreate,
-    className
+    className,
+    readOnly
   )
   assert(adapter, 'adapter required')
   assert(schema.children, `children required for schema=${stringify(schema)}`)
@@ -36,25 +37,38 @@ export function getFields({schema, adapter, result = [], parent, isCreate, class
           (!isCreate && meta.hidden)
         )
       ) {
+        const _readOnly = readOnly || meta.isGenerated || meta.isDiscriminator
         if (property.type === 'object') {
-          // allow adapter to wrap in some kind of container?
-          getFields({
+          // allow adapter to wrap in some kind of container provided by getSection
+          const {getSection} = adapter
+          const _parent = pushParent({parent, key})
+          const _result = getFields({
             schema: property,
             adapter,
-            result,
-            parent: pushParent({parent, key}),
+            result: getSection ? [] : result,
+            parent: _parent,
             isCreate,
-            className
+            className,
+            readOnly: _readOnly
           })
+
+          if (getSection && !_.isEmpty(_result)) {
+            result.push(getSection({fields: _result, parent: _parent}))
+          }
         } else {
-          const readOnly = meta.isGenerated || meta.isDiscriminator
-          // let field
-          // if (meta.isDiscriminator) {
-          //   field = adapter.getDiscriminator({key, property, parent, meta, className})
-          // } else {
-          //   field = adapter.getField({key, property, parent, meta, className, readOnly})
-          // }
-          const field = adapter.getField({key, property, parent, meta, className, readOnly})
+          let field
+          if (meta.isDiscriminator) {
+            field = adapter.getDiscriminator({key, property, parent, meta, className})
+          } else {
+            field = adapter.getField({
+              key,
+              property,
+              parent,
+              meta,
+              className,
+              readOnly: _readOnly
+            })
+          }
           result.push(field)
         }
       } else {
@@ -275,21 +289,22 @@ export function getUpdatePaths({schema, parent, result = []}) {
   return _.transform(
     schema.children,
     (result, property, key) => {
-      dbg('transform: key=%o, property=%o, result=%o', key, property, result)
+      dbg('transform: key=%o, property=%j, result=%o', key, property, result)
       var meta = merge(property.meta)
       if (!meta.isGenerated) {
+        const _parent = pushParent({parent: parent, key: key})
         if (property.type === 'object') {
           getUpdatePaths({
             schema: property,
-            parent: pushParent({parent: parent, key: key}),
+            parent: _parent,
             result: result
           })
         } else {
-          result.push(pushParent({parent: parent, key: key}))
+          result.push(_parent)
         }
       }
     },
-    []
+    result
   )
 }
 

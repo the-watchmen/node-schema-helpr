@@ -13,7 +13,7 @@ const request = _requests.alternatives[0]
 test('getUpdatePaths', t => {
   const paths = getUpdatePaths({schema: request})
   dbg('paths=%o', paths)
-  t.truthy(paths)
+  t.deepEqual(paths, ['type._id', 'f1'])
 })
 
 test('updateFilter', t => {
@@ -30,7 +30,7 @@ test('updateFilter', t => {
       },
       schema: request
     }),
-    {f1: 'v1'}
+    {f1: 'v1', type: {_id: 't1'}}
   )
 })
 
@@ -38,7 +38,7 @@ test('getAlternativeUpdatePaths', t => {
   const paths = getAlternativeUpdatePaths({alternatives: _requests})
   dbg('paths=%o', paths)
   t.truthy(paths)
-  t.deepEqual(paths.t1, ['f1'])
-  t.deepEqual(paths.t2, ['f2'])
-  t.deepEqual(paths.t3, ['f3'])
+  t.deepEqual(paths.t1, ['type._id', 'f1'])
+  t.deepEqual(paths.t2, ['type._id', 'f2'])
+  t.deepEqual(paths.t3, ['type._id', 'f3'])
 })
