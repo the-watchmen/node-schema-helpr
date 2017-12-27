@@ -13,6 +13,10 @@ export function getSchemaProperty({property}) {
   return `children.${property.replace(/\./g, '.children.')}`
 }
 
+export function getSchemaValue({schema, property}) {
+  return _.get(schema, getSchemaProperty({property}))
+}
+
 export function getFields({schema, adapter, result = [], parent, isCreate, className, readOnly}) {
   dbg(
     'get-fields: schema=%o, result.length=%o, parent=%o, is-create=%o, class-name=%o, read-only=%o',
@@ -59,6 +63,8 @@ export function getFields({schema, adapter, result = [], parent, isCreate, class
           let field
           if (meta.isDiscriminator) {
             field = adapter.getDiscriminator({key, property, parent, meta, className})
+          } else if (meta.options) {
+            field = adapter.getSelect({key, property, parent, meta, className})
           } else {
             field = adapter.getField({
               key,
@@ -150,14 +156,8 @@ export function getFields({schema, adapter, result = [], parent, isCreate, class
 // returns:
 //
 // {
-//   t1: {
-//     label: 'type one',
-//     alternative: getAlternativeValue({alternative})
-//   },
-//   t2: {
-//     label: 'type two',
-//     alternative: getAlternativeValue({alternative})
-//   }
+//   t1: getAlternativeValue({alternative}),
+//   t2: getAlternativeValue({alternative})
 // }
 //
 export function getAlternativeValues({alternatives, getAlternativeValue}) {
@@ -210,18 +210,12 @@ export function getModeFields({schema, adapter, className}) {
 //
 // {
 //   t1: {
-//     label: 'type one',
-//     alternative: {
-//       create: [...],
-//       edit: [...]
-//     }
+//     create: [...],
+//     edit: [...]
 //   },
 //   t2: {
-//     label: 'type two',
-//     alternative: {
-//       create: [...],
-//       edit: [...]
-//     }
+//     create: [...],
+//     edit: [...]
 //   }
 // }
 //
@@ -237,14 +231,8 @@ export function getAlternativeModeFields({alternatives, adapter, className}) {
 // returns:
 //
 // {
-//   t1: {
-//     label: 'type one',
-//     alternative
-//   },
-//   t2: {
-//     label: 'type two',
-//     alternative:
-//   }
+//   t1: alternative,
+//   t2: alternative
 // }
 //
 export function getAlternativeSchemas({alternatives}) {
@@ -254,22 +242,12 @@ export function getAlternativeSchemas({alternatives}) {
   })
 }
 
-// args:
-//
-// {
-//   t1: {
-//     label: 'type one',
-//     alternative: {...}
-//   },
-//   t2: {
-//     label: 'type two',
-//     alternative: {...}
-//   }
-// }
-//
 // returns:
 //
-// {t1: 'type one', t2: 'type two'}
+// {
+//   t1: 'type one',
+//   t2: 'type two'
+// }
 //
 // export function getAlternativeDiscriminators({alternatives}) {
 //   return _.transform(alternatives, (result, alternative, key) => {
