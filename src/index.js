@@ -44,6 +44,7 @@ export function getFields({
     (result, property, key) => {
       const meta = merge(property.meta)
       dbg('get-fields: property=%o, key=%o, meta=%o', property, key, meta)
+      const propPath = pushParent({parent, key})
       if (
         !(
           (isCreate && meta.isGenerated) ||
@@ -55,22 +56,20 @@ export function getFields({
         if (property.type === 'object') {
           // allow adapter to wrap in some kind of container provided by getSection
           const {getSection} = adapter
-          const _parent = pushParent({parent, key})
           const _result = getFields({
             schema: property,
             adapter,
             result: getSection ? [] : result,
-            parent: _parent,
+            parent: propPath,
             isCreate,
             className,
             readOnly: _readOnly
           })
 
           if (getSection && !_.isEmpty(_result)) {
-            result.push(getSection({fields: _result, parent: _parent}))
+            result.push(getSection({fields: _result, parent, key}))
           }
         } else {
-          const propPath = pushParent({parent, key})
           const hook = _.get(hooks, propPath)
           const field = hook
             ? hook({key, property, parent, className, readOnly, meta})
@@ -86,7 +85,7 @@ export function getFields({
           result.push(field)
         }
       } else {
-        dbg('get-fields: skipping property=%o', pushParent({parent, key}))
+        dbg('get-fields: skipping property=%o', propPath)
       }
     },
     result
