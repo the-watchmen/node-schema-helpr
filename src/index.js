@@ -17,15 +17,25 @@ export function getSchemaValue({schema, property}) {
   return _.get(schema, getSchemaProperty({property}))
 }
 
-export function getFields({schema, adapter, result = [], parent, isCreate, className, readOnly}) {
+export function getFields({
+  schema,
+  adapter,
+  result = [],
+  parent,
+  isCreate,
+  className,
+  readOnly,
+  hooks
+}) {
   dbg(
-    'get-fields: schema=%o, result.length=%o, parent=%o, is-create=%o, class-name=%o, read-only=%o',
+    'get-fields: schema=%o, result.length=%o, parent=%o, is-create=%o, class-name=%o, read-only=%o, hooks=%o',
     schema,
     result.length,
     parent,
     isCreate,
     className,
-    readOnly
+    readOnly,
+    hooks
   )
   assert(adapter, 'adapter required')
   assert(schema.children, `children required for schema=${stringify(schema)}`)
@@ -60,21 +70,19 @@ export function getFields({schema, adapter, result = [], parent, isCreate, class
             result.push(getSection({fields: _result, parent: _parent}))
           }
         } else {
-          let field
-          if (meta.isDiscriminator) {
-            field = adapter.getDiscriminator({key, property, parent, meta, className})
-          } else if (meta.options) {
-            field = adapter.getSelect({key, property, parent, meta, className})
-          } else {
-            field = adapter.getField({
-              key,
-              property,
-              parent,
-              meta,
-              className,
-              readOnly: _readOnly
-            })
-          }
+          const propPath = pushParent({parent, key})
+          const hook = _.get(hooks, propPath)
+          const field = hook
+            ? hook({key, property, parent, className, readOnly, meta})
+            : adapter.getField({
+                key,
+                property,
+                parent,
+                meta,
+                className,
+                readOnly: _readOnly
+              })
+
           result.push(field)
         }
       } else {
