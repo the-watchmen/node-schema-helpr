@@ -4,7 +4,7 @@ import debug from 'debug'
 
 const dbg = debug('lib:schema-helpr')
 
-export function pushParent({parent, key}) {
+export function propertyPath({parent, key}) {
   return parent ? `${parent}.${key}` : key
 }
 
@@ -25,18 +25,10 @@ export function getFields({
   isCreate,
   className,
   readOnly,
-  hooks
+  hooks,
+  values
 }) {
-  dbg(
-    'get-fields: schema=%o, result.length=%o, parent=%o, is-create=%o, class-name=%o, read-only=%o, hooks=%o',
-    schema,
-    result.length,
-    parent,
-    isCreate,
-    className,
-    readOnly,
-    hooks
-  )
+  dbg('get-fields: args=%o', arguments[0])
   assert(adapter, 'adapter required')
   assert(schema.children, `children required for schema=${stringify(schema)}`)
   return _.transform(
@@ -44,7 +36,7 @@ export function getFields({
     (result, property, key) => {
       const meta = merge(property.meta)
       dbg('get-fields: property=%o, key=%o, meta=%o', property, key, meta)
-      const propPath = pushParent({parent, key})
+      const path = propertyPath({parent, key})
       if (
         !(
           (isCreate && meta.isGenerated) ||
@@ -60,32 +52,37 @@ export function getFields({
             schema: property,
             adapter,
             result: getSection ? [] : result,
-            parent: propPath,
+            parent: path,
             isCreate,
             className,
-            readOnly: _readOnly
+            readOnly: _readOnly,
+            values
           })
 
           if (getSection && !_.isEmpty(_result)) {
             result.push(getSection({fields: _result, parent, key}))
           }
         } else {
-          const hook = _.get(hooks, propPath)
+          const hook = _.get(hooks, path)
+          const value = _.get(values, path)
+          dbg('value=%o', value)
           const field = hook
-            ? hook({key, property, parent, className, readOnly, meta})
+            ? hook({key, property, parent, className, readOnly, meta, value, path})
             : adapter.getField({
                 key,
                 property,
                 parent,
                 meta,
                 className,
-                readOnly: _readOnly
+                readOnly: _readOnly,
+                value,
+                path
               })
 
           result.push(field)
         }
       } else {
-        dbg('get-fields: skipping property=%o', propPath)
+        dbg('get-fields: skipping property=%o', path)
       }
     },
     result
@@ -277,7 +274,7 @@ export function getUpdatePaths({schema, parent, result = []}) {
       dbg('transform: key=%o, property=%j, result=%o', key, property, result)
       var meta = merge(property.meta)
       if (!meta.isGenerated) {
-        const _parent = pushParent({parent: parent, key: key})
+        const _parent = propertyPath({parent: parent, key: key})
         if (property.type === 'object') {
           getUpdatePaths({
             schema: property,
