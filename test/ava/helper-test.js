@@ -1,9 +1,9 @@
 import test from 'ava'
-import {pushParent, getSchemaProperty} from '../../src'
+import {propertyPath, getSchemaProperty} from '../../src'
 
-test('pushParent', t => {
-  t.is(pushParent({key: 'k'}), 'k')
-  t.is(pushParent({parent: 'p', key: 'k'}), 'p.k')
+test('propertyPath', t => {
+  t.is(propertyPath({key: 'k'}), 'k')
+  t.is(propertyPath({parent: 'p', key: 'k'}), 'p.k')
 })
 
 test('getSchemaProperty', t => {

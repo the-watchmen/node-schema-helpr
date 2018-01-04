@@ -1,5 +1,5 @@
 import debug from 'debug'
-import {pushParent} from '../../../src'
+import {propertyPath} from '../../../src'
 
 const dbg = debug('test:schema-helpr:adapter')
 
@@ -10,11 +10,11 @@ export default {
   getField({key, property, parent, className, readOnly}) {
     dbg('get-field: args=%o', arguments[0])
 
-    return {props: {name: pushParent({parent, key})}}
+    return {props: {name: propertyPath({parent, key})}}
   },
   getDiscriminator({key, property, parent, meta, className}) {
     dbg('get-discriminator: args=%o', arguments[0])
 
-    return {props: {name: pushParent({parent, key})}}
+    return {props: {name: propertyPath({parent, key})}}
   }
 }
