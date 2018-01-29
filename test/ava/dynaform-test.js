@@ -1,5 +1,5 @@
 import test from 'ava'
-import debug from 'debug'
+import debug from '@watchmen/debug'
 import {pretty, deepClean, isLike, stringify} from '@watchmen/helpr'
 import {
   getAlternativeModeFields,
@@ -10,7 +10,7 @@ import {
 import adapter from './fixtures/adapter'
 import requests from './fixtures/request'
 
-const dbg = debug('test:dynaform-test')
+const dbg = debug(__filename)
 
 const _requests = requests.describe()
 dbg('requests=%s', pretty(_requests))

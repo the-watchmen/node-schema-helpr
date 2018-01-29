@@ -6,7 +6,7 @@ import _ from 'lodash'
 import request from './fixtures/request'
 import {check} from './_helper'
 
-const dbg = debug('test:joi')
+const dbg = debug(__filename)
 
 const alt = joi
   .alternatives()
