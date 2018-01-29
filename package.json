@@ -1,6 +1,6 @@
 {
   "name": "@watchmen/schema-helpr",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "",
   "main": "dist/index.js",
   "repository": "the-watchmen/node-schema-helpr",
@@ -40,7 +40,10 @@
   },
   "ava": {
     "babel": "inherit",
-    "require": ["babel-register", "babel-polyfill"]
+    "require": [
+      "babel-register",
+      "babel-polyfill"
+    ]
   },
   "xo": {
     "useEslintrc": true
