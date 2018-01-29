@@ -4,7 +4,7 @@ import joi2json from 'joi-to-json-schema'
 import debug from 'debug'
 import r1 from './fixtures/request-1'
 
-const dbg = debug('test:joi2js')
+const dbg = debug(__filename)
 
 test('convert', t => {
   const schema = joi2json(r1)

@@ -1,10 +1,10 @@
 import test from 'ava'
-import debug from 'debug'
+import debug from '@watchmen/debug'
 import {pretty} from '@watchmen/helpr'
 import {getUpdatePaths, getUpdateData, getAlternativeUpdatePaths} from '../../src'
 import requests from './fixtures/request'
 
-const dbg = debug('test:schema-helpr:update-filter')
+const dbg = debug(__filename)
 
 const _requests = requests.describe()
 dbg('requests=%s', pretty(_requests))

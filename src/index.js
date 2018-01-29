@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {stringify, merge, assert} from '@watchmen/helpr'
+import {merge, assert} from '@watchmen/helpr'
 import debug from 'debug'
 
 const dbg = debug('lib:schema-helpr')
@@ -301,4 +301,39 @@ export function getUpdateData({data, schema, paths}) {
   var _paths = paths || getUpdatePaths({schema: schema})
   dbg('paths=%o', _paths)
   return _.pick(data, _paths)
+}
+
+export function isRequired({property}) {
+  return _.get(property, 'flags.presence') === 'required'
+}
+
+export function isString({property}) {
+  return _.get(property, 'type') === 'string'
+}
+
+export function isNumber({property}) {
+  return _.get(property, 'type') === 'number'
+}
+
+export function getRuleArg({property, name}) {
+  const rule = _.find(property.rules, rule => rule.name === name)
+  return rule && rule.arg
+}
+
+export function getMin({property}) {
+  return getRuleArg({property, name: 'min'})
+}
+
+export function getMax({property}) {
+  return getRuleArg({property, name: 'max'})
+}
+
+export function getRegex({property}) {
+  const arg = getRuleArg({property, name: 'regex'})
+  return arg && arg.pattern
+}
+
+export function stringify({schema}) {
+  // https://github.com/hapijs/joi/issues/207#issuecomment-361247374
+  return JSON.stringify(schema, (k, v) => (v instanceof RegExp ? v.toString().slice(1, -1) : v))
 }
