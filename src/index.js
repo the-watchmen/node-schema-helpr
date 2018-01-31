@@ -315,6 +315,12 @@ export function isNumber({property}) {
   return _.get(property, 'type') === 'number'
 }
 
+export function isCreditCard({property}) {
+  return (
+    _.get(property, 'type') === 'string' && getRuleArg({property, name: 'name'}) === 'creditCard'
+  )
+}
+
 export function getRuleArg({property, name}) {
   const rule = _.find(property.rules, rule => rule.name === name)
   return rule && rule.arg

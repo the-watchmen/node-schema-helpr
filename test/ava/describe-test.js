@@ -108,3 +108,15 @@ test('regex', t => {
   const _regex = getRegex({property: schema})
   t.is(_regex, '^\\d{3}-\\d{3}-\\d{4}$')
 })
+
+test('creditCard', t => {
+  let property = joi
+    .string()
+    .creditCard()
+    .describe()
+  dbg('schema=%s', pretty(property))
+  //let limit = getMax({property})
+  //t.truthy(_.isNumber(limit))
+  //t.is(limit, 1)
+  t.pass()
+})
